@@ -2,10 +2,12 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include "Ubidots.h"
 
 #include "personal_info.h" //SSID and Password
 
 ESP8266WebServer server(80);
+Ubidots ubidots(UBIDOTS_TOKEN, UBI_HTTP);
 
 const int led = 13;
 
@@ -51,6 +53,9 @@ void setup(void) {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
+  ubidots.wifiConnect(ssid, password);
+  // ubidots.setDebug(true);  // Uncomment this line for printing debug messages
+
   if (MDNS.begin("esp8266")) {
     Serial.println("MDNS responder started");
   }
@@ -87,4 +92,21 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
   MDNS.update();
+
+  float value1 = random(0, 9) * 10;
+  float value2 = random(0, 9) * 100;
+  float value3 = random(0, 9) * 1000;
+  ubidots.add("Variable_Name_One", value1);  // Change for your variable name
+  ubidots.add("Variable_Name_Two", value2);
+  ubidots.add("Variable_Name_Three", value3);
+
+  bool bufferSent = false;
+  bufferSent = ubidots.send();  // Will send data to a device label that matches the device Id
+
+  if (bufferSent) {
+    // Do something if values were sent properly
+    Serial.println("Values sent by the device");
+  }
+
+  delay(5000);
 }
