@@ -87,7 +87,7 @@ void setup(void) {
 
   server.begin();
   Serial.println("HTTP server started");
-}
+} //End setup
 
 void loop(void) {
   server.handleClient();
@@ -109,4 +109,4 @@ void loop(void) {
   }
 
   delay(5000);
-}
+} //End loop
